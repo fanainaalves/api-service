@@ -27,7 +27,7 @@ public class ServiceController {
     @GetMapping
     public ResponseEntity<List<ServiceDTO>> findAllServices(){
         try{
-            List<ServiceDTO> serviceDTOS = service.findAll();
+            List<ServiceDTO> serviceDTOS = serviceServices.findAll();
             if (serviceDTOS.isEmpty()){
                 return ResponseEntity.noContent().build();
             }
@@ -41,7 +41,7 @@ public class ServiceController {
     @PostMapping
     public ResponseEntity<ServiceDTO> createService(@RequestBody @Valid ServiceDTO serviceDTO){
         try {
-            ServiceDTO createdService = service.create(serviceDTO);
+            ServiceDTO createdService = serviceServices.create(serviceDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdService);
         } catch (ServiceException e) {
             return ResponseEntity.badRequest().build();
@@ -52,7 +52,7 @@ public class ServiceController {
     @GetMapping(value = "/getId/{id}")
     public ResponseEntity<ServiceDTO> findById(@PathVariable String id){
         try {
-            ServiceDTO serviceDTO = service.findById(id);
+            ServiceDTO serviceDTO = serviceServices.findById(id);
             return ResponseEntity.ok(serviceDTO);
         } catch (ServiceException e){
             return ResponseEntity.notFound().build();
@@ -63,7 +63,7 @@ public class ServiceController {
     @GetMapping(value = "/getName/{name}")
     public ResponseEntity<ServiceDTO> findByName(@PathVariable String name){
         try {
-            ServiceDTO serviceDTO = service.findByName(name);
+            ServiceDTO serviceDTO = serviceServices.findByName(name);
             if (serviceDTO != null) {
                 return ResponseEntity.ok(serviceDTO);
             } else {
@@ -79,7 +79,7 @@ public class ServiceController {
     @PutMapping(value = "/{id}")
     public ResponseEntity<ServiceDTO> updateService(@PathVariable String id, @Valid @RequestBody ServiceDTO serviceDTO){
         try{
-            ServiceDTO updatedService = service.update(id, serviceDTO);
+            ServiceDTO updatedService = serviceServices.update(id, serviceDTO);
             return ResponseEntity.ok(updatedService);
         } catch (ServiceException e){
             return ResponseEntity.notFound().build();
@@ -90,7 +90,7 @@ public class ServiceController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id){
         try {
-            service.delete(id);
+            serviceServices.delete(id);
             return ResponseEntity.ok().build();
         } catch (ServiceException e){
             return ResponseEntity.notFound().build();
