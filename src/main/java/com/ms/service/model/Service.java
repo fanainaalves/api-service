@@ -1,19 +1,21 @@
 package com.ms.service.model;
 
 
+import com.ms.service.dto.ServiceDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @Document(collection = "services")
-public class Service {
+public class Service implements Serializable {
 
     @Id
     private String serviceID; // id
@@ -25,4 +27,10 @@ public class Service {
     private int serviceRuntime; // tempo de execução
     private int serviceTerm; // prazo
 
+    public Service (ServiceDTO serviceDTO){
+        BeanUtils.copyProperties(serviceDTO, this);
+    }
+    public Service(){
+        super();
+    }
 }
