@@ -16,8 +16,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.math.BigDecimal;
+
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("tests")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServiceControllerTests extends ServiceApplicationTests {
 
@@ -25,36 +27,38 @@ public class ServiceControllerTests extends ServiceApplicationTests {
     private MockMvc mockMvc;
     private String id;
     private String name;
+    private String idCategory;
 
     @Autowired
     private ServiceController serviceController;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(serviceController).build();
-        this.id = "65f346c11ac3d257aed346f9";
+        this.id = "65f4826c5488840d27e9868e";
         this.name = "empresa1";
+        this.idCategory = "idCategory";
     }
 
     @Test
-    @Order(0)
-    public void testCreateService() throws Exception{
+    @Order(1)
+    public void testCreate() throws Exception {
         log.info("testCreateService");
-        // CONSTRUTOR DE SERVICEDTO = id, nome, email, status, descricao, preco, tempo de execução, prazo
-        ServiceDTO serviceDTO = new ServiceDTO(null, "empresa1", "empresa1@email.com");
+        ServiceDTO serviceDTO = new ServiceDTO(id, "empresa1", "abc@abc.com", "idCategory", true, "", new BigDecimal(0.1), 1, 1, "null", "null", "image", "Admin");
+        //id, "telecom2", "empresa2@email.com","category", true, "descrição aqui...",  new BigDecimal(1.2), 1, 1, null, null, "null"))
         this.mockMvc.perform(MockMvcRequestBuilders
-                .post("/api/services")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(serviceDTO))
-                .accept(MediaType.APPLICATION_JSON))
+                        .post("/api/services")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(serviceDTO))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
                 .andReturn();
     }
 
     @Test
-    @Order(1)
-    public void testFindAllServices() throws Exception{
+    @Order(2)
+    public void testFindAll() throws Exception {
         log.info("testFindAllServices");
         this.mockMvc.perform(MockMvcRequestBuilders.get("/api/services"))
                 .andDo(MockMvcResultHandlers.print())
@@ -63,8 +67,8 @@ public class ServiceControllerTests extends ServiceApplicationTests {
     }
 
     @Test
-    @Order(2)
-    public void testFindById() throws Exception{
+    @Order(3)
+    public void testFindById() throws Exception {
         log.info("testFindById");
         this.mockMvc.perform(MockMvcRequestBuilders.get("/api/services/getId/" + id))
                 .andDo(MockMvcResultHandlers.print())
@@ -74,9 +78,9 @@ public class ServiceControllerTests extends ServiceApplicationTests {
     }
 
     @Test
-    @Order(3)
-    public void testFindByName() throws Exception{
-        log.info("testFindByName");
+    @Order(4)
+    public void testFindByName() throws Exception {
+        log.info("testFindByServiceName");
         this.mockMvc.perform(MockMvcRequestBuilders.get("/api/services/getName/" + name))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -84,34 +88,55 @@ public class ServiceControllerTests extends ServiceApplicationTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").exists());
     }
 
+//    @Test
+//    @Order(5)
+//    public void testFindByIdCategory() throws Exception {
+//        log.info("testFindByIdCategory");
+//        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/services/getIdCategory/" + idCategory))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.category").exists())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("category"));
+//    }
+
     @Test
-    @Order(4)
-    public void testUpdateService() throws Exception{
+    @Order(5)
+    public void testFindByIdCategory() throws Exception {
+        log.info("testFindByIdCategory");
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/services/getIdCategory/{idCategory}", idCategory))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[*].idCategory").exists());
+    }
+
+    @Test
+    @Order(6)
+    public void testUpdate() throws Exception {
         log.info("testUpdateService");
         this.mockMvc.perform(MockMvcRequestBuilders.put("/api/services/" + id)
-                // CONSTRUTOR DE SERVICEDTO = id, nome, email, status, descricao, preco, tempo de execução, prazo
-                .content(asJsonString(new ServiceDTO(id, "telecom2", "empresa2@email.com")))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .content(asJsonString(new ServiceDTO(id, "telecom2", "empresa2@email.com", "idCategory", true, "descrição aqui...", new BigDecimal(1.2), 1, 1, "created", "updated", "null", "Admin")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
     }
 
     @Test
-    @Order(5)
-    public void testDeleteService() throws Exception{
+    @Order(7)
+    public void testDelete() throws Exception {
         log.info("testDeleteService");
-        this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/clients/" + id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/services/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").doesNotExist());
     }
 
-    public static String asJsonString(final Object object){
+    public static String asJsonString(final Object object) {
         try {
             return new ObjectMapper().writeValueAsString(object);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

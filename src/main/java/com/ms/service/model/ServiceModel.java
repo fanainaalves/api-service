@@ -1,28 +1,25 @@
-package com.ms.service.dto;
+package com.ms.service.model;
 
-import com.ms.service.model.ServiceModel;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import com.ms.service.dto.ServiceDTO;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-public class ServiceDTO implements Serializable {
+@Builder
+@Document(collection = "services")
+public class ServiceModel implements Serializable {
 
+    @Id
     private String id;
-
-    @NotBlank
     private String name;
-
-    @NotBlank
-    @Email
     private String email;
     private String idCategory;
     private boolean status;
@@ -33,11 +30,12 @@ public class ServiceDTO implements Serializable {
     private String created;
     private String updated;
     private String image;
-    @NotBlank
     private String registryUser;
 
-    public ServiceDTO (ServiceModel serviceModel){
-        BeanUtils.copyProperties(serviceModel, this);
+    public ServiceModel (ServiceDTO serviceDTO){
+        BeanUtils.copyProperties(serviceDTO, this);
     }
-
+    public ServiceModel(){
+        super();
+    }
 }

@@ -1,0 +1,68 @@
+[{
+  "_id": {
+    "$oid": "6630fb927fb1bc46a6496c4b"
+  },
+  "name": "Cafeteria",
+  "email": "cafeteria@gmail.com",
+  "idCategory": "662aa84dd0e49675ae7dfabe",
+  "status": true,
+  "description": "Nossa cafeteria é o lugar perfeito para uma reunião de negócios ou para um encontro descontraído. Venha desfrutar de um ambiente agradável e saboroso. Se você é um verdadeiro apreciador de café, encontrou o lugar certo. Nossa cafeteria oferece uma seleção de grãos especiais e métodos de preparo exclusivos. Sinta o aroma irresistível do café fresco ao entrar em nossa cafeteria.",
+  "price": "11.0",
+  "runtime": 2,
+  "term": 1,
+  "created": "2024-04-30T11:09:22.609156100",
+  "image": "cafeteria.jpg",
+  "registryUser": "ADMIN",
+  "_class": "com.ms.service.model.ServiceModel"
+},
+{
+  "_id": {
+    "$oid": "6630fbba7fb1bc46a6496c4c"
+  },
+  "name": "Cestas de Café da Manhã",
+  "email": "cestasdecafe@gmail.com",
+  "idCategory": "662aa834d0e49675ae7dfabd",
+  "status": true,
+  "description": "Temos em nossa loja uma linda opção para presentear aquela pessoa especial! Onde voce pode escolher os itens para compor essa linda cesta de café da manhã. Cada item em nossa cesta é preparado com amor e dedicação. Os pães são assados com cuidado, as geleias são feitas com frutas frescas e os bolos são receitas de família. Os biscoitos artesanais são pequenas obras de arte culinária. Tudo isso para proporcionar um café da manhã especial e memorável. Venha até a nossa loja e prepare essa surpresa tão especial!",
+  "price": "200.2",
+  "runtime": 4,
+  "term": 1,
+  "created": "2024-04-30T11:10:02.903797600",
+  "image": "cestade-cafe.jpeg",
+  "registryUser": "ADMIN",
+  "_class": "com.ms.service.model.ServiceModel"
+},
+{
+  "_id": {
+    "$oid": "6630fbd17fb1bc46a6496c4d"
+  },
+  "name": "Marmiteria Fitness",
+  "email": "marmitasfitness@gmail.com",
+  "idCategory": "662aa810d0e49675ae7dfabb",
+  "status": true,
+  "description": "As marmitas fitness são uma excelente opção para quem busca uma alimentação saudável e equilibrada. Temos diversas opções para todos os gostos. Venha em uma de nossas lojas conferir o nosso cardápio, e escolher aquela combinação que mais se adequa ao seu perfil. Nossas marmitas são preparadas por Nutricionistas Profissionais, com todo cuidado e amor para que sua refeição seja saborosa e corresponda a sua dieta.",
+  "price": "11.0",
+  "runtime": 2,
+  "term": 1,
+  "created": "2024-04-30T11:10:25.593336800",
+  "image": "marmitas.jpeg",
+  "registryUser": "ADMIN",
+  "_class": "com.ms.service.model.ServiceModel"
+},
+{
+  "_id": {
+    "$oid": "6630fbe67fb1bc46a6496c4e"
+  },
+  "name": "Delivery Programado",
+  "email": "delivery@gmail.com",
+  "idCategory": "662aa825d0e49675ae7dfabc",
+  "status": true,
+  "description": "A entrega agendada permite que o cliente escolha o dia e horário para receber seu pedido. Isso é especialmente útil para pessoas que têm uma rotina agitada ou preferem receber suas compras em momentos específicos. Com o agendamento, o cliente pode se programar e garantir que estará disponível para receber a entrega.",
+  "price": "110.0",
+  "runtime": 2,
+  "term": 1,
+  "created": "2024-04-30T11:10:46.778326500",
+  "image": "delivery.jpeg",
+  "registryUser": "ADMIN",
+  "_class": "com.ms.service.model.ServiceModel"
+}]

@@ -4,18 +4,24 @@ import com.ms.service.dto.ServiceDTO;
 import com.ms.service.exceptions.ServiceException;
 import com.ms.service.service.ServiceServices;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@CrossOrigin
 @RestController
+@Slf4j
 @RequestMapping("/api/services")
 public class ServiceController {
+
+    @Value("${app.path.files}")
+    String pathFiles;
 
     private final ServiceServices serviceServices;
 
@@ -25,7 +31,7 @@ public class ServiceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ServiceDTO>> findAllServices(){
+    public ResponseEntity<List<ServiceDTO>> findAll(){
         try{
             List<ServiceDTO> serviceDTOS = serviceServices.findAll();
             if (serviceDTOS.isEmpty()){
@@ -37,9 +43,8 @@ public class ServiceController {
         }
     }
 
-    @Transactional
     @PostMapping
-    public ResponseEntity<ServiceDTO> createService(@RequestBody @Valid ServiceDTO serviceDTO){
+    public ResponseEntity<ServiceDTO> create(@RequestBody @Valid ServiceDTO serviceDTO){
         try {
             ServiceDTO createdService = serviceServices.create(serviceDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdService);
@@ -48,7 +53,20 @@ public class ServiceController {
         }
     }
 
-    // testFindById(),
+    @PostMapping(value="/createAndUpload")
+    public ResponseEntity<ServiceDTO> createAndUpload(@RequestBody @Valid ServiceDTO entity, @RequestParam("file") MultipartFile file) {
+        log.info("Entrou no createAndUpload");
+        log.info("Recebendo o arquivo: ", file.getOriginalFilename());
+        var path = pathFiles + file.getOriginalFilename();
+        log.info("Novo nome do arquivo: " + path);
+        try {
+            ServiceDTO createdService = serviceServices.create(entity);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdService);
+        } catch (ServiceException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @GetMapping(value = "/getId/{id}")
     public ResponseEntity<ServiceDTO> findById(@PathVariable String id){
         try {
@@ -59,7 +77,6 @@ public class ServiceController {
         }
     }
 
-    // testFindByName(),
     @GetMapping(value = "/getName/{name}")
     public ResponseEntity<ServiceDTO> findByName(@PathVariable String name){
         try {
@@ -74,10 +91,22 @@ public class ServiceController {
         }
     }
 
-    // testUpdateService(),
-    @Transactional
+    @GetMapping(value = "/getIdCategory/{idCategory}")
+    public ResponseEntity<List<ServiceDTO>> findByIdCategory(@PathVariable String idCategory){
+        try {
+            List<ServiceDTO> serviceDTO = serviceServices.findByIdCategory(idCategory);
+            if(serviceDTO.isEmpty()){
+                return ResponseEntity.notFound().build();
+            } else {
+                return ResponseEntity.ok(serviceDTO);
+            }
+        } catch (ServiceException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ServiceDTO> updateService(@PathVariable String id, @Valid @RequestBody ServiceDTO serviceDTO){
+    public ResponseEntity<ServiceDTO> update(@PathVariable String id, @RequestBody @Valid ServiceDTO serviceDTO){
         try{
             ServiceDTO updatedService = serviceServices.update(id, serviceDTO);
             return ResponseEntity.ok(updatedService);
@@ -86,7 +115,6 @@ public class ServiceController {
         }
     }
 
-    // testDeleteService()
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id){
         try {

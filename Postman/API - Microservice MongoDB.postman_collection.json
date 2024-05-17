@@ -1,0 +1,106 @@
+{
+	"info": {
+		"_postman_id": "1a8f4d36-4de0-4fd8-a13f-d978cb7cdf8d",
+		"name": "API - Microservice MongoDB",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "25388187"
+	},
+	"item": [
+		{
+			"name": "create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"ABC\",\r\n    \"email\": \"abc@gmail.com\",\r\n    \"status\": true,\r\n    \"description\": \"abc...\",\r\n    \"price\": 1.0,\r\n    \"runtime\": 2,\r\n    \"term\": 1,\r\n    \"registryUser\": \"Maria\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:9005/api/services"
+			},
+			"response": []
+		},
+		{
+			"name": "findAll",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:9005/api/services"
+			},
+			"response": []
+		},
+		{
+			"name": "findById",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:9005/api/services/getId/65f84ff50fa222257513c744"
+			},
+			"response": []
+		},
+		{
+			"name": "findByName",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"connectis \"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:9005/api/services/getName/ABC"
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \r\n    \"id\": \"65f848030fa222257513c741\",\r\n        \"name\": \"Tambaú\",\r\n        \"email\": \"tambau@gmail.com\",\r\n        \"status\": false,\r\n        \"description\": \"Empresa de alimentos...\",\r\n        \"price\": 4.2,\r\n        \"runtime\": 4,\r\n        \"term\": 1,\r\n        \"registryUser\": \"fanny\"\r\n        }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:9005/api/services/65f848030fa222257513c741"
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:9005/api/services/65f84ff50fa222257513c744"
+			},
+			"response": []
+		}
+	]
+}
