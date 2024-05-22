@@ -6,12 +6,12 @@ import com.ms.service.service.ServiceServices;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin
@@ -19,9 +19,6 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/services")
 public class ServiceController {
-
-    @Value("${app.path.files}")
-    String pathFiles;
 
     private final ServiceServices serviceServices;
 
@@ -43,26 +40,15 @@ public class ServiceController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<ServiceDTO> create(@RequestBody @Valid ServiceDTO serviceDTO){
+    @PostMapping("/create")
+    public ResponseEntity<ServiceDTO> create(@RequestParam("file") MultipartFile file, @RequestPart("service") ServiceDTO serviceDTO) {
         try {
+            String image = serviceServices.saveImage(file);
+            serviceDTO.setImage(image);
+
             ServiceDTO createdService = serviceServices.create(serviceDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdService);
-        } catch (ServiceException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @PostMapping(value="/createAndUpload")
-    public ResponseEntity<ServiceDTO> createAndUpload(@RequestBody @Valid ServiceDTO entity, @RequestParam("file") MultipartFile file) {
-        log.info("Entrou no createAndUpload");
-        log.info("Recebendo o arquivo: ", file.getOriginalFilename());
-        var path = pathFiles + file.getOriginalFilename();
-        log.info("Novo nome do arquivo: " + path);
-        try {
-            ServiceDTO createdService = serviceServices.create(entity);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdService);
-        } catch (ServiceException e) {
+        } catch (ServiceException | IOException e) {
             return ResponseEntity.badRequest().build();
         }
     }

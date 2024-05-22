@@ -6,9 +6,15 @@ import com.ms.service.model.ServiceModel;
 import com.ms.service.exceptions.ServiceException;
 import com.ms.service.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.time.LocalDateTime;
@@ -20,9 +26,14 @@ public class ServiceServices {
     @Autowired
     ServiceRepository serviceRepository;
 
-    public List<ServiceDTO> findAll() throws ServiceException {
-        List<ServiceModel> list = serviceRepository.findAll();
-        return list.stream().map(ServiceDTO::new).toList();
+    @Value("${app.path.files}")
+    private String fileStorageLocation;
+
+    public String saveImage(MultipartFile file) throws IOException {
+        String fileName = file.getOriginalFilename();
+        Path path = Paths.get(fileStorageLocation + fileName);
+        Files.write(path, file.getBytes());
+        return fileName;
     }
 
     @Transactional
@@ -32,6 +43,11 @@ public class ServiceServices {
         serviceModel.setCreated(LocalDateTime.now().toString());
         serviceRepository.save(serviceModel);
         return new ServiceDTO(serviceModel);
+    }
+
+    public List<ServiceDTO> findAll() throws ServiceException {
+        List<ServiceModel> list = serviceRepository.findAll();
+        return list.stream().map(ServiceDTO::new).toList();
     }
 
     public ServiceDTO findById(String id) throws ServiceException {
@@ -58,7 +74,6 @@ public class ServiceServices {
         Optional<ServiceModel> optionalServiceModel = serviceRepository.findById(id);
         if (optionalServiceModel.isPresent()){
             ServiceModel serviceModel = optionalServiceModel.get();
-
             serviceModel.setName(serviceDTO.getName());
             serviceModel.setEmail(serviceDTO.getEmail());
             serviceModel.setIdCategory((serviceDTO.getIdCategory()));
@@ -67,9 +82,9 @@ public class ServiceServices {
             serviceModel.setPrice(serviceDTO.getPrice());
             serviceModel.setRuntime(serviceDTO.getRuntime());
             serviceModel.setTerm(serviceDTO.getTerm());
+            serviceModel.setImage(serviceDTO.getImage());
             serviceModel.setRegistryUser(serviceDTO.getRegistryUser());
             serviceModel.setUpdated(LocalDateTime.now().toString());
-
             serviceRepository.save(serviceModel);
             return new ServiceDTO(serviceModel);
         } else {

@@ -33,7 +33,6 @@ public class ServiceDTO implements Serializable {
     private String created;
     private String updated;
     private String image;
-    @NotBlank
     private String registryUser;
 
     public ServiceDTO (ServiceModel serviceModel){
