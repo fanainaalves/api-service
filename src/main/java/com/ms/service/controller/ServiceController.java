@@ -91,13 +91,20 @@ public class ServiceController {
         }
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<ServiceDTO> update(@PathVariable String id, @RequestBody @Valid ServiceDTO serviceDTO){
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ServiceDTO> update(@PathVariable String id, @RequestPart(value = "file",
+            required = false) MultipartFile file, @RequestPart("service") @Valid ServiceDTO serviceDTO) {
         try{
+            if (file != null && !file.isEmpty()) {
+                String image = serviceServices.saveImage(file);
+                serviceDTO.setImage(image);
+            }
             ServiceDTO updatedService = serviceServices.update(id, serviceDTO);
             return ResponseEntity.ok(updatedService);
-        } catch (ServiceException e){
+        } catch (ServiceNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (ServiceException | IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
