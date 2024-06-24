@@ -38,7 +38,7 @@ public class UploadControllerTests {
                 "test image content".getBytes()
         );
 
-        String fileStorageLocation = "C:/Users/fsilva3/OneDrive - Getronics/Documentos/Angular/organi-admin/ogani-admin/src/assets/img/service/";
+        String fileStorageLocation = "C:/Users/fsilva3/OneDrive - Getronics/Documentos/Angular/Projeto Final/Frontend/ogani-admin/src/assets/img/service/";
         Path path = Paths.get(fileStorageLocation + file.getOriginalFilename());
         Files.createDirectories(path.getParent());
 

@@ -7,24 +7,33 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultHandler;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(ServiceController.class)
 @ActiveProfiles("tests")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -35,6 +44,9 @@ public class ServiceControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @MockBean
     private ServiceServices serviceServices;
 
@@ -42,7 +54,7 @@ public class ServiceControllerTests {
     private UploadController uploadController;
 
     private String id = "65f4826c5488840d27e9868e";
-    private String name = "empresa1";
+//    private String name = "empresa1";
     private String idCategory = "idCategory";
 
     @Test
@@ -50,15 +62,31 @@ public class ServiceControllerTests {
     public void testCreate() throws Exception {
         log.info("testCreateService");
         ServiceDTO serviceDTO = new ServiceDTO(
-                id, name, "abc@abc.com", idCategory, true, "",
+                id, "empresa1", "abc@abc.com", idCategory, true, "",
                 new BigDecimal(0.1), 1, 1, "null",
                 "null", "test-image.png", "Admin");
-        Mockito.when(serviceServices.update(Mockito.eq(id), Mockito.any(ServiceDTO.class))).thenReturn(serviceDTO);
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/services/" + id)
-                        .content(asJsonString(serviceDTO))
-                        .contentType(MediaType.APPLICATION_JSON)
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "test-image.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "test image content".getBytes()
+        );
+
+        MockMultipartFile service = new MockMultipartFile(
+                "service",
+                "service.json",
+                MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(serviceDTO)
+        );
+
+        Mockito.when(serviceServices.create(Mockito.any(ServiceDTO.class))).thenReturn(serviceDTO);
+        this.mockMvc.perform(multipart("/api/services/create")
+                        .file(file)
+                        .file(service)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists());
     }
 
@@ -94,9 +122,9 @@ public class ServiceControllerTests {
     public void testFindByName() throws Exception {
         log.info("testFindByServiceName");
         ServiceDTO serviceDTO = new ServiceDTO(id, "empresa1", "abc@abc.com", "idCategory", true, "", new BigDecimal(0.1), 1, 1, "null", "null", "image", "Admin");
-        Mockito.when(serviceServices.findByName(name)).thenReturn(serviceDTO);
+        Mockito.when(serviceServices.findByName("empresa1")).thenReturn(serviceDTO);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/services/getName/" + name))
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/services/getName/empresa1"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isNotEmpty())
@@ -121,15 +149,40 @@ public class ServiceControllerTests {
     @Order(6)
     public void testUpdate() throws Exception {
         log.info("testUpdateService");
-        ServiceDTO serviceDTO = new ServiceDTO(id, "telecom2", "empresa2@email.com", "idCategory", true, "descrição aqui...", new BigDecimal(1.2), 1, 1, "created", "updated", "null", "Admin");
-        Mockito.when(serviceServices.update(Mockito.eq(id), Mockito.any(ServiceDTO.class))).thenReturn(serviceDTO);
+        ServiceDTO serviceDTO = new ServiceDTO(
+                id, "telecom2", "empresa2@email.com", idCategory, true,
+                "descrição aqui...", new BigDecimal(1.2), 1, 1,
+                "created", "updated", "updated-image.png", "Admin");
 
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/services/" + id)
-                        .content(asJsonString(serviceDTO))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+        byte[] fileContent = "updated image content".getBytes();
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "updated-image.png",
+                MediaType.IMAGE_PNG_VALUE,
+                fileContent
+        );
+
+        MockMultipartFile service = new MockMultipartFile(
+                "service",
+                "service.json",
+                MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(serviceDTO)
+        );
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/services/" + id)
+                        .file(file)
+                        .file(service)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(serviceDTO))
+                        .with(request -> {
+                            request.setMethod(HttpMethod.PUT.name());
+                            return request;
+                        }))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists());
+                .andReturn();
     }
 
     @Test

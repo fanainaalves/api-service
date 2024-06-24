@@ -3,6 +3,7 @@ package com.ms.service.dto;
 import com.ms.service.model.ServiceModel;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class ServiceDTO implements Serializable {
 
     @NotBlank
     @Email
+    @Pattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Insira um e-mail válido (por exemplo, teste@teste.com)")
     private String email;
     private String idCategory;
     private boolean status;

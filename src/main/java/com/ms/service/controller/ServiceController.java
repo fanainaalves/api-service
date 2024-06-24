@@ -2,11 +2,13 @@ package com.ms.service.controller;
 
 import com.ms.service.dto.ServiceDTO;
 import com.ms.service.exceptions.ServiceException;
+import com.ms.service.exceptions.ServiceNotFoundException;
 import com.ms.service.service.ServiceServices;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,7 +43,7 @@ public class ServiceController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ServiceDTO> create(@RequestParam("file") MultipartFile file, @RequestPart("service") ServiceDTO serviceDTO) {
+    public ResponseEntity<ServiceDTO> create(@RequestParam("file") MultipartFile file, @RequestPart("service") @Valid ServiceDTO serviceDTO) {
         try {
             String image = serviceServices.saveImage(file);
             serviceDTO.setImage(image);
